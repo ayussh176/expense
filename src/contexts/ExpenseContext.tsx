@@ -1,6 +1,10 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Expense } from '../utils/sampleData';
+import { useAuth } from './AuthContext';
+import { db } from '../config/firebase';
+import {
+  doc, getDoc, setDoc, updateDoc
+} from 'firebase/firestore';
 
 export interface Income {
   id: string;
@@ -32,45 +36,40 @@ export const useExpenses = () => {
 };
 
 export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { currentUser } = useAuth();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [income, setIncome] = useState<Income[]>([]);
 
-  useEffect(() => {
-    // Load expenses from localStorage or use sample data
-    const savedExpenses = localStorage.getItem('expenses');
-    const savedIncome = localStorage.getItem('income');
-    
-    if (savedExpenses) {
-      setExpenses(JSON.parse(savedExpenses));
-    } else {
-      // Import sample data for initial load
-      import('../utils/sampleData').then(({ sampleExpenses }) => {
-        setExpenses(sampleExpenses);
-        localStorage.setItem('expenses', JSON.stringify(sampleExpenses));
-      });
-    }
-
-    if (savedIncome) {
-      setIncome(JSON.parse(savedIncome));
-    }
-  }, []);
+  const userDocRef = currentUser ? doc(db, 'users', currentUser.uid) : null;
 
   useEffect(() => {
-    // Save expenses to localStorage whenever expenses change
-    localStorage.setItem('expenses', JSON.stringify(expenses));
-  }, [expenses]);
+    if (!currentUser) return;
 
-  useEffect(() => {
-    // Save income to localStorage whenever income changes
-    localStorage.setItem('income', JSON.stringify(income));
-  }, [income]);
+    const fetchData = async () => {
+      const docSnap = await getDoc(userDocRef!);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setExpenses(data.expenses || []);
+        setIncome(data.income || []);
+      }
+    };
+
+    fetchData();
+  }, [currentUser]);
+
+  const saveData = async (updatedExpenses: Expense[], updatedIncome: Income[]) => {
+    if (!userDocRef) return;
+    await setDoc(userDocRef, { expenses: updatedExpenses, income: updatedIncome });
+  };
 
   const addExpense = (expenseData: Omit<Expense, 'id'>) => {
     const newExpense: Expense = {
       ...expenseData,
       id: `exp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     };
-    setExpenses(prev => [newExpense, ...prev]);
+    const updated = [newExpense, ...expenses];
+    setExpenses(updated);
+    saveData(updated, income);
   };
 
   const addIncome = (incomeData: Omit<Income, 'id'>) => {
@@ -78,31 +77,33 @@ export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({ child
       ...incomeData,
       id: `inc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     };
-    setIncome(prev => [newIncome, ...prev]);
+    const updated = [newIncome, ...income];
+    setIncome(updated);
+    saveData(expenses, updated);
   };
 
   const deleteExpense = (id: string) => {
-    setExpenses(prev => prev.filter(expense => expense.id !== id));
+    const updated = expenses.filter(exp => exp.id !== id);
+    setExpenses(updated);
+    saveData(updated, income);
   };
 
   const deleteIncome = (id: string) => {
-    setIncome(prev => prev.filter(item => item.id !== id));
+    const updated = income.filter(inc => inc.id !== id);
+    setIncome(updated);
+    saveData(expenses, updated);
   };
 
   const updateExpense = (id: string, updates: Partial<Expense>) => {
-    setExpenses(prev => 
-      prev.map(expense => 
-        expense.id === id ? { ...expense, ...updates } : expense
-      )
-    );
+    const updated = expenses.map(exp => exp.id === id ? { ...exp, ...updates } : exp);
+    setExpenses(updated);
+    saveData(updated, income);
   };
 
   const updateIncome = (id: string, updates: Partial<Income>) => {
-    setIncome(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, ...updates } : item
-      )
-    );
+    const updated = income.map(inc => inc.id === id ? { ...inc, ...updates } : inc);
+    setIncome(updated);
+    saveData(expenses, updated);
   };
 
   const value = {
