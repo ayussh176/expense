@@ -173,7 +173,7 @@ const Dashboard = () => {
               <CardContent>
                 <div className="space-y-4 max-h-80 overflow-y-auto">
                   {thisMonthExpenses.slice(0, 10).map((expense) => (
-                    <div key={expense.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={expense.id} className="flex items-center justify-between p-3 bg-syan rounded-lg">
                       <div>
                         <p className="font-medium">{expense.description}</p>
                         <p className="text-sm text-gray-500">{expense.category} • {expense.date}</p>

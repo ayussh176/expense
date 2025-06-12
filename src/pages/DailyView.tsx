@@ -174,7 +174,7 @@ const DailyView = () => {
           <CardContent>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {dayExpenses.map((expense) => (
-                <div key={expense.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={expense.id} className="flex items-center justify-between p-3 bg-syan rounded-lg">
                   <div>
                     <p className="font-medium">{expense.description}</p>
                     <Badge variant="outline" className="text-xs mt-1">{expense.category}</Badge>
