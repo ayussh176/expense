@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { LogOut, TrendingUp, Calendar, Clock, BarChart3, Sun, Moon, Menu, X } from 'lucide-react'; // Import Menu and X icons
+// Import Menu and X icons for mobile toggle
+import { LogOut, TrendingUp, Calendar, Clock, BarChart3, Sun, Moon, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const location = useLocation();
@@ -15,7 +16,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/');
+      navigate('/'); // Navigate to the root (now login page) after logout
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -71,6 +72,7 @@ const Navbar = () => {
               onClick={handleLogout}
               variant="outline"
               size="sm"
+              // Ensure this logout button also hides on mobile if the hamburger is present
               className="hidden md:flex items-center space-x-2 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <LogOut className="h-4 w-4" />

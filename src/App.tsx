@@ -8,7 +8,7 @@ import { ExpenseProvider } from "./contexts/ExpenseContext";
 import { ThemeProvider } from "./contexts/ThemeContext"; 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
-import Index from "./pages/Index";
+// import Index from "./pages/Index"; // REMOVED: Index page import
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import MonthlyView from "./pages/MonthlyView";
@@ -29,7 +29,8 @@ const App = () => (
             <BrowserRouter>
               <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  {/* CHANGED: Root path now points to Login */}
+                  <Route path="/" element={<Login />} /> 
                   <Route path="/login" element={<Login />} />
                   <Route
                     path="/dashboard"
