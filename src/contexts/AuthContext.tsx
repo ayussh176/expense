@@ -1,57 +1,45 @@
 // src/contexts/AuthContext.tsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import {
-  User,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from 'firebase/auth';
-import { auth } from '../config/firebase';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import firebase from "../config/firebase";
 
-interface AuthContextType {
-  currentUser: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  loading: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+export const AuthProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const login = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+  const login = async (email, password) => {
+    return firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password);
   };
 
-  const signup = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+  const signup = async (email, password) => {
+    return firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password);
   };
 
   const logout = async () => {
-    await signOut(auth);
+    return firebase.auth().signOut();
   };
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    console.log("Auth state changed:", user);
-    setCurrentUser(user);
-    setLoading(false);
-  });
-
-  return unsubscribe;
-}, []);
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      console.log("Auth state changed:", user);
+      setCurrentUser(user);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
 
   const value = {
     currentUser,

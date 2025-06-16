@@ -1,13 +1,10 @@
-// src/config/initFirebase.ts
-import { auth } from "./firebase";
-import { browserLocalPersistence, setPersistence } from "firebase/auth";
+import firebase from "./firebase"; // your firebase.js (not modular)
 
-// This ensures persistence is set BEFORE anything else runs
 export const initAuthPersistence = async () => {
   try {
-    await setPersistence(auth, browserLocalPersistence);
-    console.log("✅ Firebase auth persistence set to localStorage.");
+    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    console.log("✅ Firebase auth persistence set to LOCAL.");
   } catch (err) {
-    console.error("❌ Failed to set Firebase persistence:", err);
+    console.error("❌ Failed to set persistence:", err);
   }
 };
