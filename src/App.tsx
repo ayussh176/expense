@@ -23,10 +23,11 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      {/* ✅ Moved AuthProvider OUTSIDE BrowserRouter */}
       <AuthProvider>
-        <ExpenseProvider>
-          <ThemeProvider> 
-            <BrowserRouter>
+        <BrowserRouter>
+          <ExpenseProvider>
+            <ThemeProvider> 
               <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
                 <Routes>
                   {/* CHANGED: Root path now points to Login */}
@@ -71,9 +72,9 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>
-            </BrowserRouter>
-          </ThemeProvider>
-        </ExpenseProvider>
+            </ThemeProvider>
+          </ExpenseProvider>
+        </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
