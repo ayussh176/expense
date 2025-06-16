@@ -1,6 +1,6 @@
-// src/config/firebase.ts
-import { initializeApp } from "firebase/app";
-import { getAuth, browserLocalPersistence, setPersistence } from "firebase/auth";
+// firebase.ts
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -13,12 +13,11 @@ const firebaseConfig = {
   measurementId: "G-L8Z8ZM6R4H"
 };
 
-const app = initializeApp(firebaseConfig);
+// ✅ Ensure app is not initialized more than once
+const app = getApps().length === 0 ? initializeApp(firebaseConfig, "expense-app") : getApps()[0];
 
+// ✅ Now use named app so [DEFAULT] doesn’t override
 const auth = getAuth(app);
-// 🔒 Set persistent login using localStorage
-setPersistence(auth, browserLocalPersistence).catch(console.error);
-
 const db = getFirestore(app);
 
-export { app, auth, db };
+export { auth, db, app };

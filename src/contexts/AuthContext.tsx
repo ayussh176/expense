@@ -44,14 +44,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log("Auth state changed:", user); // Optional for debugging
-      setCurrentUser(user);
-      setLoading(false);
-    });
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    console.log("Auth state changed:", user);
+    setCurrentUser(user);
+    setLoading(false);
+  });
 
-    return unsubscribe;
-  }, []);
+  return unsubscribe;
+}, []);
 
   const value = {
     currentUser,
