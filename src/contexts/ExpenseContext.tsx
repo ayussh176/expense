@@ -1,10 +1,13 @@
+// src/contexts/ExpenseContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Expense } from '../utils/sampleData';
 import { useAuth } from './AuthContext';
+import firebase from "firebase/app";
+import "firebase/firestore";
+
+// Use your firebase v8 Firestore instance from the config file
+// (Make sure your firebase config file exports a Firestore instance using v8 syntax.)
 import { db } from '../config/firebase';
-import {
-  doc, getDoc, setDoc, updateDoc
-} from 'firebase/firestore';
 
 export interface Income {
   id: string;
@@ -14,7 +17,7 @@ export interface Income {
   date: string;
 }
 
-interface ExpenseContextType {
+export interface ExpenseContextType {
   expenses: Expense[];
   income: Income[];
   addExpense: (expense: Omit<Expense, 'id'>) => void;
@@ -27,7 +30,7 @@ interface ExpenseContextType {
 
 const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
 
-export const useExpenses = () => {
+export const useExpenses = (): ExpenseContextType => {
   const context = useContext(ExpenseContext);
   if (!context) {
     throw new Error('useExpenses must be used within an ExpenseProvider');
@@ -40,17 +43,22 @@ export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [income, setIncome] = useState<Income[]>([]);
 
-  const userDocRef = currentUser ? doc(db, 'users', currentUser.uid) : null;
+  // For Firebase v8, get the user document reference like this:
+  const userDocRef = currentUser ? db.collection('users').doc(currentUser.uid) : null;
 
   useEffect(() => {
     if (!currentUser) return;
 
     const fetchData = async () => {
-      const docSnap = await getDoc(userDocRef!);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setExpenses(data.expenses || []);
-        setIncome(data.income || []);
+      try {
+        const docSnap = await userDocRef!.get();
+        if (docSnap.exists) {
+          const data = docSnap.data();
+          setExpenses(data?.expenses || []);
+          setIncome(data?.income || []);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -59,7 +67,11 @@ export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const saveData = async (updatedExpenses: Expense[], updatedIncome: Income[]) => {
     if (!userDocRef) return;
-    await setDoc(userDocRef, { expenses: updatedExpenses, income: updatedIncome });
+    try {
+      await userDocRef.set({ expenses: updatedExpenses, income: updatedIncome });
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
   };
 
   const addExpense = (expenseData: Omit<Expense, 'id'>) => {
@@ -106,7 +118,7 @@ export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({ child
     saveData(expenses, updated);
   };
 
-  const value = {
+  const value: ExpenseContextType = {
     expenses,
     income,
     addExpense,
