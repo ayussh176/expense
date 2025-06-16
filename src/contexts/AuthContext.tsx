@@ -1,6 +1,14 @@
-
+// src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import {
+  User,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
+} from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 interface AuthContextType {
@@ -26,6 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   const login = async (email: string, password: string) => {
+    await setPersistence(auth, browserLocalPersistence);
     await signInWithEmailAndPassword(auth, email, password);
   };
 

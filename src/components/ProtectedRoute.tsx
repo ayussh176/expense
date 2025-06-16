@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,7 +7,11 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>; // Show a loader or blank until auth state is known
+  }
 
   return currentUser ? <>{children}</> : <Navigate to="/login" />;
 };
