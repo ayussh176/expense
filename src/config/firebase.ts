@@ -1,7 +1,7 @@
-
-import { initializeApp } from 'firebase/app';
+// src/config/firebase.ts
+import { initializeApp } from "firebase/app";
 import { getAuth, browserLocalPersistence, setPersistence } from "firebase/auth";
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBm8g11RHdGZ6Qe8iGddYjcZc0Yp4aYsDg",
@@ -14,7 +14,11 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence);
-export const db = getFirestore(app);
-export default app;
+
+const auth = getAuth(app);
+// 🔒 Set persistent login using localStorage
+setPersistence(auth, browserLocalPersistence).catch(console.error);
+
+const db = getFirestore(app);
+
+export { app, auth, db };

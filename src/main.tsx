@@ -1,5 +1,10 @@
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import { initAuthPersistence } from './config/initFirebase';
 
-createRoot(document.getElementById("root")!).render(<App />);
+initAuthPersistence().then(() => {
+  createRoot(document.getElementById("root")!).render(
+    <App />
+  );
+});
