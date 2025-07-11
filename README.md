@@ -6,7 +6,7 @@
 
 ---
 
-## 🔑 Features
+## Features
 
 - ➕ Add income or expense entries
 - 🧾 View your total balance and individual transactions
