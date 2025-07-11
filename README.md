@@ -2,7 +2,7 @@
 
 **Expense Tracker** is a minimal and easy-to-use web application that allows users to keep track of their personal expenses. Users can log in, add income and expense entries, and view a running balance — all stored securely with Firebase.
 
-🌐 **Live App**: [expense-tracker-176.netlify.app](https://expense-tracker-176.netlify.app/)
+**Live App**: [expense-tracker-176.netlify.app](https://expense-tracker-176.netlify.app/)
 
 ---
 
